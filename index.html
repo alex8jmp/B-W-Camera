@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Switchable B/W Camera</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icon-192.png" type="image/png" />
+    <meta name="theme-color" content="#111111" />
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("service-worker.js")
+          .then(() => console.log("✅ Service Worker Registered"))
+          .catch((err) => console.warn("Service worker failed:", err));
+      }
+    </script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #111;
+        color: #fff;
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h2 {
+        margin-top: 1em;
+      }
+
+      video,
+      canvas {
+        width: 100%;
+        max-width: 480px;
+        aspect-ratio: 1 / 1;
+        background: #000;
+        border: 1px solid #444;
+        margin-top: 1em;
+      }
+
+      video {
+        object-fit: cover;
+        filter: grayscale(100%);
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: row-reverse;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5em;
+        margin-top: 1em;
+      }
+
+      button {
+        padding: 0.8em 1.2em;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 6px;
+        background-color: #fff;
+        color: #000;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Switchable B/W Camera</h2>
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="canvas" style="display: none"></canvas>
+
+    <div class="controls">
+      <button id="snap">📸</button>
+      <button id="switch">🔄</button>
+    </div>
+
+    <script>
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const snap = document.getElementById("snap");
+      const switchBtn = document.getElementById("switch");
+      const ctx = canvas.getContext("2d");
+
+      let currentStream = null;
+      let videoDevices = [];
+      let currentDeviceIndex = 0;
+
+      function getTimestampFilename() {
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        return `bw_${pad(now.getMonth() + 1)}${pad(
+          now.getDate()
+        )}${now.getFullYear()}_${pad(now.getHours())}${pad(
+          now.getMinutes()
+        )}${pad(now.getSeconds())}.png`;
+      }
+
+      async function getVideoDevices() {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        videoDevices = devices.filter((device) => device.kind === "videoinput");
+
+        // Try to find a back camera
+        const rearIndex = videoDevices.findIndex(
+          (d) =>
+            d.label.toLowerCase().includes("back") ||
+            d.label.toLowerCase().includes("rear")
+        );
+        currentDeviceIndex = rearIndex !== -1 ? rearIndex : 0;
+      }
+
+      async function startCamera(deviceId = null) {
+        if (currentStream) {
+          currentStream.getTracks().forEach((t) => t.stop());
+        }
+
+        const constraints = {
+          video: {
+            deviceId: deviceId ? { exact: deviceId } : undefined,
+            facingMode: "environment",
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
+          audio: false,
+        };
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          currentStream = stream;
+          video.srcObject = stream;
+        } catch (err) {
+          alert("Camera access failed: " + err.message);
+        }
+      }
+
+      switchBtn.addEventListener("click", async () => {
+        if (videoDevices.length > 1) {
+          currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
+          await startCamera(videoDevices[currentDeviceIndex].deviceId);
+        }
+      });
+
+      snap.addEventListener("click", () => {
+        const fullW = video.videoWidth;
+        const fullH = video.videoHeight;
+
+        if (fullW === 0 || fullH === 0) {
+          alert("Camera not ready. Try again.");
+          return;
+        }
+
+        const size = Math.min(fullW, fullH);
+        const offsetX = (fullW - size) / 2;
+        const offsetY = (fullH - size) / 2;
+
+        canvas.width = size;
+        canvas.height = size;
+
+        ctx.drawImage(video, offsetX, offsetY, size, size, 0, 0, size, size);
+
+        const imageData = ctx.getImageData(0, 0, size, size);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          data[i] = data[i + 1] = data[i + 2] = avg;
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+        // Auto-download the image
+        const dataURL = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = dataURL;
+        link.download = getTimestampFilename();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+
+      (async () => {
+        await getVideoDevices();
+        if (videoDevices.length > 0) {
+          await startCamera(videoDevices[currentDeviceIndex].deviceId);
+        } else {
+          alert("No video input devices found.");
+        }
+      })();
+    </script>
+  </body>
+</html>
