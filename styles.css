@@ -5,3 +5,89 @@
 @media(max-width:360px){.app-shell{padding:0 10px}.brand strong{font-size:18px}.camera-controls{padding-left:10px;padding-right:10px}.preset-scroller{gap:5px}.preset{font-size:11px}.viewfinder{min-height:275px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 [hidden]{display:none!important}
+
+/* V2: compact phone camera layout with accurate crop ratios. */
+.ratio-picker{display:flex;align-items:center;gap:3px;background:var(--surface2);padding:4px;border-radius:100px;min-width:0}
+.ratio-option{border:0;border-radius:100px;color:var(--ink);background:transparent;min-height:38px;min-width:43px;padding:0 10px;font-size:13px;font-weight:700}
+.ratio-option.is-selected{color:var(--on-primary);background:var(--primary)}
+.quickbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 2px 0}
+.looks-button{border:1px solid var(--outline);border-radius:100px;background:var(--surface2);color:var(--ink);min-height:46px;padding:5px 13px;font-weight:700;font-size:13px;white-space:nowrap}
+.looks-button span{display:block;font-size:10px;font-weight:500;color:var(--muted)}
+.viewfinder{width:100%;height:auto;min-height:0;aspect-ratio:3/4;max-height:100%;margin:auto}
+.viewfinder[data-ratio="1:1"]{aspect-ratio:1/1}
+.viewfinder[data-ratio="3:4"]{aspect-ratio:3/4}
+.viewfinder[data-ratio="9:16"]{aspect-ratio:9/16}
+.viewfinder[data-ratio="Full"]{aspect-ratio:var(--full-ratio,3/4)}
+.camera-card{display:flex;flex-direction:column;min-height:0}
+.camera-controls{padding:10px 16px 0}
+.shutter{width:66px;height:66px}.thumbnail-button,.swap-button{width:48px;height:48px}
+.camera-help{margin:8px 0 0;font-size:11px}
+.looks-dialog .adjustments{padding:4px 0 8px}
+.looks-dialog .section-heading{margin-bottom:12px}
+.looks-dialog .section-heading h3{font-size:17px;letter-spacing:-.3px;margin:0}
+.looks-dialog .preset-scroller{margin-bottom:10px}
+.looks-dialog .slider-group{margin:10px 4px}
+@media(max-width:699px){
+ html,body{height:100%;overflow:hidden}
+ .app-shell{height:100dvh;min-height:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 10px env(safe-area-inset-bottom);overflow:hidden}
+ .topbar{min-height:54px;flex:0 0 54px}
+ .brand-mark{height:36px;width:36px;border-radius:12px}
+ .brand strong{font-size:18px}
+ .brand span:not(.brand-mark){font-size:8px;margin-top:1px}
+ main{display:flex;flex:1;min-height:0}
+ .camera-card{width:100%;flex:1;padding:8px 10px 8px;border-radius:23px;overflow:hidden;box-shadow:none}
+ .viewfinder{flex:1;min-height:0;max-width:100%;width:auto;height:0;aspect-ratio:unset!important;align-self:stretch;border-radius:17px}
+ .viewfinder video{object-fit:cover}
+ .camera-empty{padding:10px}
+ .camera-empty .empty-symbol{height:42px;width:42px;margin-bottom:8px;border-radius:14px}
+ .camera-empty h1{font-size:17px}.camera-empty p{font-size:12px;margin-bottom:10px}
+ .view-top{top:9px}.view-bottom{bottom:9px}
+ .quickbar{flex:0 0 auto}
+ .camera-controls{flex:0 0 auto}
+ .camera-help{flex:0 0 auto}
+ .sheet-dialog{max-height:85dvh}
+}
+@media(max-width:370px){.ratio-option{min-width:36px;padding:0 7px}.looks-button{padding:4px 8px}.camera-controls{padding-top:6px}.camera-help{font-size:10px}}
+@media(max-height:650px) and (max-width:699px){.camera-help{display:none}.topbar{min-height:48px;flex-basis:48px}.shutter{width:56px;height:56px}.camera-controls{padding-top:5px}.quickbar{padding-top:5px}.ratio-option{min-height:34px}.looks-button{min-height:40px}}
+
+@media(max-width:699px){
+ .viewfinder video{width:100%;height:100%;object-fit:cover}
+}
+
+/* A centered photo frame that remains entirely visible regardless of phone height. */
+.viewfinder-slot{width:100%;min-height:0;display:flex;align-items:center;justify-content:center}
+@media(min-width:700px){.viewfinder-slot{height:530px}.viewfinder{height:100%;width:auto;max-width:100%}}
+@media(max-width:699px){
+ .viewfinder-slot{flex:1 1 0;height:0;overflow:hidden}
+ .viewfinder{flex:none;align-self:center;aspect-ratio:auto!important;max-width:100%;max-height:100%;margin:0}
+}
+
+/* V3: real two-column camera layout for phones and tablets in landscape. */
+@media (orientation:landscape) and (max-height:900px){
+ html,body{height:100%;width:100%;overflow:hidden}
+ .app-shell{max-width:none;width:100%;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:env(safe-area-inset-top) max(10px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(10px,env(safe-area-inset-left))}
+ .topbar{min-height:44px;flex:0 0 44px}
+ .brand-mark{width:32px;height:32px;border-radius:11px}.brand strong{font-size:17px}.brand span:not(.brand-mark){font-size:8px;margin-top:0}
+ .icon-button{height:40px;width:40px}
+ main{display:flex;flex:1 1 auto;min-height:0;min-width:0}
+ .camera-card{width:100%;height:100%;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(168px,29vw,290px);grid-template-rows:minmax(0,1fr) auto auto;column-gap:12px;row-gap:8px;padding:8px 12px;border-radius:23px;overflow:hidden;box-shadow:none}
+ .viewfinder-slot{grid-column:1;grid-row:1/4;display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-width:0;min-height:0;overflow:hidden}
+ .viewfinder{flex:none;min-height:0;max-height:100%;max-width:100%;height:auto;width:auto;aspect-ratio:auto!important;margin:0;align-self:center;border-radius:17px}
+ .quickbar{grid-column:2;grid-row:1;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:12px;padding:0;min-width:0;min-height:0}
+ .ratio-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:5px;border-radius:19px;min-width:0}
+ .ratio-option{min-width:0;min-height:42px;padding:0 4px}
+ .looks-button{min-height:48px;width:100%;border-radius:16px}
+ .camera-controls{grid-column:2;grid-row:2;display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:5px;padding:0;align-self:center;width:100%}
+ .shutter{width:clamp(54px,12vh,78px);height:clamp(54px,12vh,78px)}
+ .thumbnail-button,.swap-button{width:clamp(40px,9vh,56px);height:clamp(40px,9vh,56px)}
+ .camera-help{grid-column:2;grid-row:3;font-size:10px;line-height:1.3;margin:0;padding:0 0 3px}
+ .camera-empty{padding:12px}.camera-empty .empty-symbol{width:44px;height:44px;margin-bottom:8px}.camera-empty h1{font-size:17px}.camera-empty p{font-size:12px;margin-bottom:10px}
+ .sheet-dialog{max-height:92dvh}
+}
+@media (orientation:landscape) and (max-height:420px){
+ .topbar{min-height:38px;flex-basis:38px}.brand-mark{width:30px;height:30px}
+ .camera-card{padding:5px 8px;column-gap:8px;grid-template-columns:minmax(0,1fr) clamp(160px,29vw,240px);row-gap:4px}
+ .quickbar{gap:7px}.ratio-option{min-height:32px;font-size:12px}.looks-button{min-height:40px}
+ .camera-help{display:none}.camera-controls{grid-row:2/4}
+ .view-top{top:8px}.view-bottom{bottom:8px}.live-chip,.resolution-chip,.view-bottom span{padding:5px 7px;font-size:9px}
+}

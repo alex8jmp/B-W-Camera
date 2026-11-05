@@ -47,3 +47,7 @@ The viewfinder uses CSS grayscale/contrast/brightness filters. The capture canva
 - `manifest.webmanifest` — app install metadata
 - `service-worker.js` — subpath-safe offline asset caching
 - `assets/` — PWA icons
+
+## Landscape orientation (v3)
+
+The interface automatically arranges the viewfinder on the left and camera controls on the right when the phone rotates. Portrait ratios adapt to landscape (3:4 becomes 4:3; 9:16 becomes 16:9), and image export follows the selected viewfinder crop. Landscape works in a regular browser tab and the installed PWA. If orientation does not rotate, check your phone's system rotation-lock setting.
