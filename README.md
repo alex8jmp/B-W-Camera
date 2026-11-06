@@ -24,6 +24,6 @@ Camera access requires HTTPS (GitHub Pages qualifies) or localhost, and a browse
 
 Camera processing is local in the browser; this project does not upload photographs or use an analytics service.
 
-## Verification (v2)
+## Verification (v2.1.0)
 
-Source HTML script syntax checked using Node.js. Responsive viewport and interactive controls should be verified on a physical Android device with Chrome, because device camera permissions, available front/rear lenses, and download behavior cannot be fully simulated in a desktop browser. Camera facing selection now checks the actual stream when the browser reports it, and short-landscape layouts have additional compact sizing. Repeated shutter presses are blocked until each image is encoded.
+Source HTML script syntax checked using Node.js. Responsive viewport and interactive controls should be verified on a physical Android device with Chrome, because device camera permissions, available front/rear lenses, and download behavior cannot be fully simulated in a desktop browser. Camera facing selection now checks the actual stream when the browser reports it, and short-landscape layouts have additional compact sizing. Repeated shutter presses are blocked until each image is encoded. Capture errors report a specific failure reason, with bounded canvas pixel count, PNG-to-JPEG fallback, and a guaranteed reenabled shutter. The version number appears at the bottom of Camera settings. Automatic downloads are best effort and browser-controlled; captures remain in the session gallery when the browser blocks the download.
