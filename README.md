@@ -23,3 +23,7 @@ Camera access requires HTTPS (GitHub Pages qualifies) or localhost, and a browse
 ## Privacy
 
 Camera processing is local in the browser; this project does not upload photographs or use an analytics service.
+
+## Verification (v2)
+
+Source HTML script syntax checked using Node.js. Responsive viewport and interactive controls should be verified on a physical Android device with Chrome, because device camera permissions, available front/rear lenses, and download behavior cannot be fully simulated in a desktop browser. Camera facing selection now checks the actual stream when the browser reports it, and short-landscape layouts have additional compact sizing. Repeated shutter presses are blocked until each image is encoded.
